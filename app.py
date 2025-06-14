@@ -1,11 +1,48 @@
 from flask import Flask,jsonify,request
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-import os   
+import os
+'''
+#Usar apenas para quando for fazer a monitoração de traces e metricas e logs da aplicação via grafana
+import logging
+import logging_loki
+from prometheus_client import start_http_server
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.exporter.prometheus import PrometheusMetricReader
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.resources import Resource
+
+
+# ---- Configuração do OpenTelemetry para Métricas ----
+# Esta seção é necessária para o Prometheus coletar as métricas
+reader = PrometheusMetricReader()
+resource = Resource(attributes={"service.name": "api-receitas"})
+provider = MeterProvider(resource=resource, metric_readers=[reader])
+start_http_server(port=8000, addr="0.0.0.0")
+
+# ---- Configuração do Logging com Contexto de Trace ----
+# Ativa a instrumentação que injeta o Trace ID nos logs
+LoggingInstrumentor().instrument(set_logging_format=True)
+log_format = '%(asctime)s %(levelname)s [%(name)s] [trace_id=%(otelTraceID)s span_id=%(otelSpanID)s] - %(message)s'
+formatter = logging.Formatter(log_format)
+
+# Configuração do LokiHandler para enviar logs para o Loki
+handler = logging_loki.LokiHandler(
+    url="http://loki:3100/loki/api/v1/push", 
+    tags={"application": "api-receitas"},  # Aqui você está configurando o rótulo (tag)
+    version="1",
+)
+handler.setFormatter(formatter)
+
+# Configuração do logger
+logger = logging.getLogger("my-logger")
+logger.setLevel(logging.DEBUG)  # Você pode usar o nível de log que preferir
+logger.addHandler(handler)
+ '''
 
 load_dotenv(dotenv_path= 'seu_caminho')
 
-app = Flask(__name__)
+app = Flask(__name__)                    
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

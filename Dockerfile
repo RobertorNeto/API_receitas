@@ -12,3 +12,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 CMD ["flask", "run", "--host=0.0.0.0"]
+
+#usar esses comandos em vez do cmd normal para rodar o monitoramento no grafana
+# EXPOSE 5000
+#
+#CMD ["opentelemetry-instrument", \
+#    "gunicorn", \
+#    "--bind", "0.0.0.0:5000", \
+#    "app:app"]
